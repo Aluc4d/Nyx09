@@ -80,13 +80,13 @@ function Invoke-AutoUpdate {
 }
 
 # =================== [CHANGELOG] ===================
-# 1.0.1 - Fixed bufferbloat status detection issues
-# 1.0.2 - Improved network optimization algorithms
-# 1.0.3 - Added Quad9 DNS provider
-# 1.1.0 - Added auto-update functionality
-# 1.1.1 - Enhanced DNS testing reliability
-# 1.2.0 - Added network diagnostics toolkit
-# 2.0.0 - Complete UI overhaul and performance enhancements
+# 1.0.4 - Fixed bufferbloat status detection issues
+# 1.0.5 - Improved network optimization algorithms
+# 1.0.6 - Added Quad9 DNS provider
+# 1.0.7 - Added auto-update functionality
+# 1.0.8 - Enhanced DNS testing reliability
+# 1.0.9 - Added network diagnostics toolkit
+# 1.1.0 - Complete UI overhaul and performance enhancements
 
 function Show-Introduction {
     Clear-Host
