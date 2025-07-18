@@ -1,4 +1,4 @@
-$scriptVersion = "1.2.0"
+$scriptVersion = "1.1.0"
 $githubRawUrl = "https://raw.githubusercontent.com/Aluc4d/Nyx09/main/DNS-SHES.ps1"
 $scriptName = "DNS SHES"
 $updateChecked = $false
@@ -353,7 +353,7 @@ function Show-NetworkEnhancementMenu {
     
     Write-Host "`n  " + ("=" * 50) -ForegroundColor DarkCyan
     Write-Host "  NOTE: NIC optimizations (option 14) are for Ethernet connections only!" -ForegroundColor Yellow
-    Write-Host "  Made and distributed by NYX09 TWEAKS * Updated 2025" -ForegroundColor DarkGray
+    Write-Host "  Made and distributed by Aluc4d & NYX09 TWEAKS * Updated 2025" -ForegroundColor DarkGray
     Write-Host "  " + ("=" * 50) -ForegroundColor DarkCyan
     
     Write-Host "`nChoose an option: " -ForegroundColor Cyan -NoNewline
