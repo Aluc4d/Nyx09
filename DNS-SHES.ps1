@@ -1,5 +1,5 @@
 # =================== [SCRIPT CONFIGURATION] ===================
-$scriptVersion = "1.2.0"
+$scriptVersion = "1.1.0"
 $githubRawUrl = "https://raw.githubusercontent.com/Aluc4d/Nyx09/main/DNS-SHES.ps1"
 $scriptName = "DNS SHES"
 $updateChecked = $false
@@ -1004,3 +1004,4 @@ while ($true) {
     $choice = Show-Banner
     Main-Menu -choice $choice
 }
+
