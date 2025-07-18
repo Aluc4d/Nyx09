@@ -1,3 +1,104 @@
+# =================== [SCRIPT CONFIGURATION] ===================
+$scriptVersion = "1.1.0"
+$githubRawUrl = "https://raw.githubusercontent.com/Aluc4d/Nyx09/main/DNS-SHES.ps1"
+$scriptName = "DNS SHES"
+$updateChecked = $false
+
+# =================== [AUTO-UPDATE MODULE] ===================
+function Invoke-AutoUpdate {
+    param(
+        [string]$currentVersion,
+        [string]$updateUrl
+    )
+    
+    Show-Header "CHECKING FOR UPDATES"
+    Write-Host "Current version: $currentVersion" -ForegroundColor Cyan
+    
+    try {
+        # Create a web client with proxy support
+        $webClient = New-Object System.Net.WebClient
+        $webClient.Proxy = [System.Net.WebRequest]::DefaultWebProxy
+        $webClient.Proxy.Credentials = [System.Net.CredentialCache]::DefaultCredentials
+        $webClient.Encoding = [System.Text.Encoding]::UTF8
+        
+        # Download the latest script content
+        Write-Host "Connecting to GitHub..." -ForegroundColor Yellow
+        $latestScriptContent = $webClient.DownloadString($updateUrl)
+        
+        # Extract version from the script
+        $versionPattern = '\$scriptVersion\s*=\s*"([\d.]+)"'
+        if ($latestScriptContent -match $versionPattern) {
+            $latestVersion = $matches[1]
+            Write-Host "Latest version available: $latestVersion" -ForegroundColor Cyan
+            
+            # Compare versions
+            $current = [version]$currentVersion
+            $latest = [version]$latestVersion
+            
+            if ($latest -gt $current) {
+                Write-Host "`nA new version is available!" -ForegroundColor Green
+                
+                # FIX: Use proper variable formatting to avoid colon issue
+                Write-Host ("Changes in version {0}:" -f $latestVersion) -ForegroundColor Cyan
+                
+                # Extract changelog information
+                $changelogPattern = '(?s)# =================== \[CHANGELOG\] ===================(.+?)# ==================='
+                if ($latestScriptContent -match $changelogPattern) {
+                    $changelog = $matches[1].Trim()
+                    Write-Host $changelog -ForegroundColor Yellow
+                } else {
+                    Write-Host " - Bug fixes and performance improvements" -ForegroundColor Yellow
+                }
+                
+                $choice = Read-Host "`nDo you want to update now? (Y/N)"
+                if ($choice -eq 'y' -or $choice -eq 'Y') {
+                    Write-Host "`nUpdating script..." -ForegroundColor Cyan
+                    
+                    # Get current script path
+                    $scriptPath = $MyInvocation.MyCommand.Path
+                    
+                    # Create backup
+                    $backupPath = "$scriptPath.bak"
+                    if (Test-Path $backupPath) { Remove-Item $backupPath -Force }
+                    Copy-Item -Path $scriptPath -Destination $backupPath -Force
+                    
+                    # Save updated script
+                    $latestScriptContent | Out-File -FilePath $scriptPath -Encoding UTF8 -Force
+                    
+                    Write-Host "`nUpdate successful! Script has been updated to version $latestVersion" -ForegroundColor Green
+                    Write-Host "Please restart the script to use the new version." -ForegroundColor Yellow
+                    Pause-ForReturn
+                    Exit
+                } else {
+                    Write-Host "`nUpdate skipped. Continuing with current version." -ForegroundColor Yellow
+                    Start-Sleep -Seconds 2
+                }
+            } else {
+                Write-Host "`nYou're using the latest version!" -ForegroundColor Green
+                Start-Sleep -Seconds 1
+            }
+        } else {
+            Write-Host "`nWarning: Could not determine version from update source" -ForegroundColor Yellow
+            Start-Sleep -Seconds 2
+        }
+    } catch {
+        Write-Host "`nUpdate check failed: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host "Continuing with current version..." -ForegroundColor Yellow
+        Start-Sleep -Seconds 2
+    }
+    
+    $global:updateChecked = $true
+}
+
+# =================== [CHANGELOG] ===================
+# 1.0.1 - Fixed bufferbloat status detection issues
+# 1.0.2 - Improved network optimization algorithms
+# 1.0.3 - Added Quad9 DNS provider
+# 1.1.0 - Added auto-update functionality
+# 1.1.1 - Enhanced DNS testing reliability
+# 1.2.0 - Added network diagnostics toolkit
+# 2.0.0 - Complete UI overhaul and performance enhancements
+
 # =================== [INTRODUCTION] ===================
 function Show-Introduction {
     Clear-Host
@@ -9,7 +110,7 @@ function Show-Introduction {
  | |  | | . ' |\___ \   \___ \|  __  |  __|  \___ \ 
  | |__| | |\  |____) |  ____) | |  | | |____ ____) |
  |_____/|_| \_|_____/  |_____/|_|  |_|______|_____/ 
-                                                    v1.0 - Aluc4d
+                                                    v$scriptVersion - Aluc4d
 
 "@ -ForegroundColor Cyan
 
@@ -63,7 +164,7 @@ function Show-Banner {
  | |  | | . ' |\___ \   \___ \|  __  |  __|  \___ \ 
  | |__| | |\  |____) |  ____) | |  | | |____ ____) |
  |_____/|_| \_|_____/  |_____/|_|  |_|______|_____/ 
-                                                    v1.0 - Aluc4d
+                                                    v$scriptVersion - Aluc4d
 "@ -ForegroundColor Cyan
 
     Write-Host "`n" ("=" * 65) -ForegroundColor DarkCyan
@@ -72,6 +173,7 @@ function Show-Banner {
     Write-Host "`t3. Choose DNS provider manually" -ForegroundColor Magenta
     Write-Host "`t4. Network Enhancement Tools" -ForegroundColor Blue
     Write-Host "`t5. Toggle Bufferbloat Settings" -ForegroundColor Cyan
+    Write-Host "`t6. Check for Updates" -ForegroundColor DarkYellow
     Write-Host "`t0. Exit" -ForegroundColor Red
     Write-Host "`n" ("=" * 65) -ForegroundColor DarkCyan
     Write-Host "Choose an option: " -ForegroundColor Cyan -NoNewline
@@ -280,7 +382,7 @@ function Show-NetworkEnhancementMenu {
     
     Write-Host "`n  " + ("=" * 50) -ForegroundColor DarkCyan
     Write-Host "  NOTE: NIC optimizations (option 14) are for Ethernet connections only!" -ForegroundColor Yellow
-    Write-Host "  Made and distributed by Aluc4d & NYX09 TWEAKS * Updated 2025" -ForegroundColor DarkGray
+    Write-Host "  Made and distributed by NYX09 TWEAKS * Updated 2025" -ForegroundColor DarkGray
     Write-Host "  " + ("=" * 50) -ForegroundColor DarkCyan
     
     Write-Host "`nChoose an option: " -ForegroundColor Cyan -NoNewline
@@ -881,13 +983,16 @@ function Main-Menu {
         "5" {
             Toggle-Bufferbloat
         }
+        "6" {
+            Invoke-AutoUpdate -currentVersion $scriptVersion -updateUrl $githubRawUrl
+        }
         "0" {
             Write-Host "`nExiting DNS Checker..." -ForegroundColor Yellow
             Start-Sleep -Seconds 1
             Exit
         }
         default {
-            Write-Host "`nInvalid selection! Please choose 0-5." -ForegroundColor Red
+            Write-Host "`nInvalid selection! Please choose 0-6." -ForegroundColor Red
             Pause-ForReturn
         }
     }
