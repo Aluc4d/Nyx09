@@ -57,3 +57,10 @@ This script is safe and doesn't modify critical system files. Always review scri
 Feel free to fork, contribute, or open issues to suggest improvements.
 
 Made with ❤️ by Aluc4d
+
+<img width="1439" height="852" alt="ping1" src="https://github.com/user-attachments/assets/448e84f1-af22-45d7-bb73-158a5f66adb8" />
+<img width="1439" height="852" alt="ping2" src="https://github.com/user-attachments/assets/32443897-9c74-43b4-b99e-20da01b41ca8" />
+<img width="1439" height="849" alt="ping3" src="https://github.com/user-attachments/assets/c7a036da-9cb2-4ed3-b3f4-d8f4578d83b9" />
+<img width="1439" height="850" alt="ping4" src="https://github.com/user-attachments/assets/a83a7d6e-895c-41a7-bea9-b53d278d5fc0" />
+<img width="1439" height="852" alt="ping5" src="https://github.com/user-attachments/assets/906099a2-cf13-48f1-bf89-3a2bee4c26ec" />
+<img width="1439" height="851" alt="ping6" src="https://github.com/user-attachments/assets/d06fd712-e35d-41cb-999f-5ca7bc06b256" />
