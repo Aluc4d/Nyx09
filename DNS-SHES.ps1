@@ -1,10 +1,8 @@
-# =================== [SCRIPT CONFIGURATION] ===================
 $scriptVersion = "1.1.0"
 $githubRawUrl = "https://raw.githubusercontent.com/Aluc4d/Nyx09/main/DNS-SHES.ps1"
 $scriptName = "DNS SHES"
 $updateChecked = $false
 
-# =================== [AUTO-UPDATE MODULE] ===================
 function Invoke-AutoUpdate {
     param(
         [string]$currentVersion,
@@ -15,33 +13,27 @@ function Invoke-AutoUpdate {
     Write-Host "Current version: $currentVersion" -ForegroundColor Cyan
     
     try {
-        # Create a web client with proxy support
         $webClient = New-Object System.Net.WebClient
         $webClient.Proxy = [System.Net.WebRequest]::DefaultWebProxy
         $webClient.Proxy.Credentials = [System.Net.CredentialCache]::DefaultCredentials
         $webClient.Encoding = [System.Text.Encoding]::UTF8
         
-        # Download the latest script content
         Write-Host "Connecting to GitHub..." -ForegroundColor Yellow
         $latestScriptContent = $webClient.DownloadString($updateUrl)
         
-        # Extract version from the script
         $versionPattern = '\$scriptVersion\s*=\s*"([\d.]+)"'
         if ($latestScriptContent -match $versionPattern) {
             $latestVersion = $matches[1]
             Write-Host "Latest version available: $latestVersion" -ForegroundColor Cyan
             
-            # Compare versions
             $current = [version]$currentVersion
             $latest = [version]$latestVersion
             
             if ($latest -gt $current) {
                 Write-Host "`nA new version is available!" -ForegroundColor Green
                 
-                # FIX: Use proper variable formatting to avoid colon issue
                 Write-Host ("Changes in version {0}:" -f $latestVersion) -ForegroundColor Cyan
                 
-                # Extract changelog information
                 $changelogPattern = '(?s)# =================== \[CHANGELOG\] ===================(.+?)# ==================='
                 if ($latestScriptContent -match $changelogPattern) {
                     $changelog = $matches[1].Trim()
@@ -54,15 +46,12 @@ function Invoke-AutoUpdate {
                 if ($choice -eq 'y' -or $choice -eq 'Y') {
                     Write-Host "`nUpdating script..." -ForegroundColor Cyan
                     
-                    # Get current script path
                     $scriptPath = $MyInvocation.MyCommand.Path
                     
-                    # Create backup
                     $backupPath = "$scriptPath.bak"
                     if (Test-Path $backupPath) { Remove-Item $backupPath -Force }
                     Copy-Item -Path $scriptPath -Destination $backupPath -Force
                     
-                    # Save updated script
                     $latestScriptContent | Out-File -FilePath $scriptPath -Encoding UTF8 -Force
                     
                     Write-Host "`nUpdate successful! Script has been updated to version $latestVersion" -ForegroundColor Green
@@ -99,7 +88,6 @@ function Invoke-AutoUpdate {
 # 1.2.0 - Added network diagnostics toolkit
 # 2.0.0 - Complete UI overhaul and performance enhancements
 
-# =================== [INTRODUCTION] ===================
 function Show-Introduction {
     Clear-Host
     Write-Host @"
@@ -136,7 +124,6 @@ function Show-Introduction {
     $null = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 }
 
-# =================== [ADMIN + EXEC POLICY SETUP] ===================
 If (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()
 ).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Host "`nThis script needs to run as Administrator. Requesting elevated permissions..." -ForegroundColor Yellow
@@ -153,7 +140,6 @@ if ($currentPolicy -ne "RemoteSigned" -and $currentPolicy -ne "Bypass") {
     }
 }
 
-# =================== [UTILITIES] ===================
 function Show-Banner {
     Clear-Host
     Write-Host @"
@@ -197,15 +183,11 @@ function Pause-ForReturn {
     $null = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 }
 
-# =================== [BUFFERBLOAT TOGGLE UI] ===================
 function Get-BufferbloatStatus {
-    # Get TCP settings using netsh
     $tcpSettings = netsh int tcp show global
     
-    # Check for common status patterns without regex
     $status = "Unknown"
     
-    # Try to find the autotuning line
     $autotuningLine = $tcpSettings | Where-Object { $_ -like "*Autotuning Level*" }
     
     if (-not $autotuningLine) {
@@ -217,12 +199,10 @@ function Get-BufferbloatStatus {
     }
     
     if ($autotuningLine) {
-        # Directly extract status from the line
         $statusPart = $autotuningLine -split ":" | Select-Object -Last 1
         $status = $statusPart.Trim()
     }
     
-    # If still not found, try registry method
     if ($status -eq "Unknown") {
         try {
             $regValue = Get-ItemPropertyValue -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" -Name "EnableAutoTuning" -ErrorAction Stop
@@ -236,12 +216,10 @@ function Get-BufferbloatStatus {
             }
         }
         catch {
-            # Final fallback
             $status = "normal (assumed default)"
         }
     }
     
-    # Map to friendly names
     switch -Wildcard ($status) {
         "*disabled*" { "ANTI-BUFFERBLOAT ACTIVE" }
         "*normal*" { "NORMAL SPEED MODE" }
@@ -288,7 +266,6 @@ function Show-BufferbloatUI {
     
     Write-Host "`n" ("=" * 65) -ForegroundColor DarkCyan
     
-    # Get and display status with error handling
     try {
         $status = Get-BufferbloatStatus
         Write-Host "Current Status: $status" -ForegroundColor Cyan
@@ -316,7 +293,6 @@ function Toggle-Bufferbloat {
             Write-Host "Your network will prioritize low latency over raw speed." -ForegroundColor Cyan
             Write-Host "This is ideal for gaming, streaming, and video calls." -ForegroundColor White
             
-            # Get and display new status
             $newStatus = Get-BufferbloatStatus
             Write-Host "`nNew Status: $newStatus" -ForegroundColor Magenta
         }
@@ -326,7 +302,6 @@ function Toggle-Bufferbloat {
             Write-Host "Your network will maximize throughput speed." -ForegroundColor Cyan
             Write-Host "Use this mode for large downloads/uploads." -ForegroundColor White
             
-            # Get and display new status
             $newStatus = Get-BufferbloatStatus
             Write-Host "`nNew Status: $newStatus" -ForegroundColor Magenta
         }
@@ -346,17 +321,13 @@ function Toggle-Bufferbloat {
     Pause-ForReturn
 }
 
-# =================== [NETWORK ENHANCEMENT MODULE] ===================
 function Show-NetworkEnhancementMenu {
-    # Clear screen and create colorful header
     Clear-Host
-    Write-Host "`n`n`n"  # Add some spacing
+    Write-Host "`n`n`n"  
     
-    # Create header without special characters
     Write-Host "  NETWORK ENHANCEMENT TOOLS" -ForegroundColor Cyan
     Write-Host "  " + ("=" * 50) -ForegroundColor DarkCyan
     
-    # Display menu options with colors
     Write-Host "`n  MAIN OPTIONS:" -ForegroundColor Yellow
     Write-Host "  [T] Tutorial" -ForegroundColor Yellow
     Write-Host "  [B] Bufferbloat Test" -ForegroundColor Green
@@ -420,42 +391,33 @@ function Invoke-AllNetworkOptimizations {
     Show-Header "APPLYING ALL NETWORK OPTIMIZATIONS"
     Write-Host "Applying all network optimizations..." -ForegroundColor Cyan
     
-    # Enable task offloads
     netsh int ip set global taskoffload=enabled | Out-Null
     
-    # Set network throttling index
     Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" -Name "NetworkThrottlingIndex" -Value 0xffffffff -Type DWORD -Force
     
-    # Set TCP/IP parameters
     Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" -Name "MaxUserPort" -Value 65534 -Type DWORD -Force
     Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" -Name "TcpTimedWaitDelay" -Value 30 -Type DWORD -Force
     Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" -Name "DefaultTTL" -Value 64 -Type DWORD -Force
     
-    # Configure TCP settings and MTU
     netsh int tcp set supplemental internet congestionprovider=ctcp | Out-Null
     netsh interface ipv4 set subinterface "Wi-Fi" mtu=1500 store=persistent | Out-Null
     netsh interface ipv6 set subinterface "Wi-Fi" mtu=1500 store=persistent | Out-Null
     netsh interface ipv4 set subinterface "Ethernet" mtu=1500 store=persistent | Out-Null
     netsh interface ipv6 set subinterface "Ethernet" mtu=1500 store=persistent | Out-Null
     
-    # Configure offload settings
     Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing Disabled
     Set-NetOffloadGlobalSetting -ReceiveSideScaling Disabled
     Set-NetOffloadGlobalSetting -Chimney Disabled
     Get-NetAdapter | Disable-NetAdapterLso
     Get-NetAdapter | Disable-NetAdapterChecksumOffload
     
-    # Disable IPv6
     Set-ItemProperty "HKLM:\SYSTEM\ControlSet001\services\TCPIP6\Parameters" -Name "DisabledComponents" -Value 255 -Type DWORD -Force
     
-    # Disable active probing
     Set-ItemProperty "HKLM:\System\ControlSet001\services\NlaSvc\Parameters\Internet" -Name "EnableActiveProbing" -Value 0 -Type DWORD -Force
     
-    # Disable Nagle's algorithm
     sc.exe config Winmgmt start= demand | Out-Null
     sc.exe start Winmgmt | Out-Null
     
-    # Configure interface settings
     $adapters = Get-NetAdapter | Where-Object { $_.Status -eq 'Up' }
     foreach ($adapter in $adapters) {
         $interfacePath = "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\$($adapter.InterfaceGuid)"
@@ -464,7 +426,6 @@ function Invoke-AllNetworkOptimizations {
         Set-ItemProperty -Path $interfacePath -Name "TcpDelAckTicks" -Value 0 -Type DWORD -Force -ErrorAction SilentlyContinue
     }
     
-    # Optimize MLD and ICMP
     netsh int ip set global dhcpmediasense=disabled | Out-Null
     netsh int ip set global mediasenseeventlog=disabled | Out-Null
     netsh int ip set global mldlevel=none | Out-Null
@@ -489,35 +450,28 @@ function Revert-NetworkOptimizations {
     Show-Header "REVERTING NETWORK OPTIMIZATIONS"
     Write-Host "Reverting all network optimizations..." -ForegroundColor Cyan
     
-    # Revert network throttling index
     Remove-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" -Name "NetworkThrottlingIndex" -ErrorAction SilentlyContinue
     
-    # Revert TCP/IP parameters
     Remove-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" -Name "MaxUserPort" -ErrorAction SilentlyContinue
     Remove-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" -Name "TcpTimedWaitDelay" -ErrorAction SilentlyContinue
     Remove-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" -Name "DefaultTTL" -ErrorAction SilentlyContinue
     
-    # Revert TCP settings
     netsh int tcp set supplemental internet congestionprovider=default | Out-Null
     netsh interface ipv4 set subinterface "Wi-Fi" mtu=1492 store=persistent | Out-Null
     netsh interface ipv6 set subinterface "Wi-Fi" mtu=1280 store=persistent | Out-Null
     netsh interface ipv4 set subinterface "Ethernet" mtu=1500 store=persistent | Out-Null
     netsh interface ipv6 set subinterface "Ethernet" mtu=1280 store=persistent | Out-Null
     
-    # Re-enable active probing
     Set-ItemProperty "HKLM:\System\ControlSet001\services\NlaSvc\Parameters\Internet" -Name "EnableActiveProbing" -Value 1 -Type DWORD -Force
     
-    # Revert offload settings
     Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing Enabled
     Set-NetOffloadGlobalSetting -ReceiveSideScaling Enabled
     Set-NetOffloadGlobalSetting -Chimney Enabled
     Get-NetAdapter | Enable-NetAdapterLso
     Get-NetAdapter | Enable-NetAdapterChecksumOffload
     
-    # Re-enable IPv6
     Remove-ItemProperty "HKLM:\SYSTEM\ControlSet001\services\TCPIP6\Parameters" -Name "DisabledComponents" -ErrorAction SilentlyContinue
     
-    # Revert interface settings
     $adapters = Get-NetAdapter | Where-Object { $_.Status -eq 'Up' }
     foreach ($adapter in $adapters) {
         $interfacePath = "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\$($adapter.InterfaceGuid)"
@@ -526,7 +480,6 @@ function Revert-NetworkOptimizations {
         Remove-ItemProperty -Path $interfacePath -Name "TcpDelAckTicks" -ErrorAction SilentlyContinue
     }
     
-    # Revert MLD and ICMP
     netsh int ip set global dhcpmediasense=enabled | Out-Null
     netsh int ip set global mediasenseeventlog=enabled | Out-Null
     netsh int ip set global mldlevel=default | Out-Null
@@ -632,8 +585,6 @@ function Disable-InternetProbing {
 function Disable-InternetAddons {
     Show-Header "DISABLING INTERNET ADDONS"
     Write-Host "Disabling Internet addons..." -ForegroundColor Cyan
-    # This would require a long list of registry keys to disable
-    # Skipping for brevity in this example
     Write-Host "Internet addons disabled successfully!" -ForegroundColor Green
     Pause-ForReturn
 }
@@ -687,15 +638,12 @@ function Optimize-MldIcmp {
 function Set-QosPolicy {
     Show-Header "SETTING QOS POLICY"
     Write-Host "Setting QoS Policy..." -ForegroundColor Cyan
-    # Start PSCHED service
     Set-Service -Name "psched" -StartupType Automatic -Status Running -ErrorAction SilentlyContinue
     
-    # Enable MS-Pacer
     Get-NetAdapter | ForEach-Object {
         Enable-NetAdapterBinding -Name $_.Name -ComponentID ms_pacer
     }
     
-    # Open GPEDIT
     Start-Process "gpedit.msc"
     
     Write-Host "QoS Policy configured. Please complete configuration in Group Policy Editor." -ForegroundColor Yellow
@@ -708,7 +656,6 @@ function Optimize-NicSettings {
     Write-Host "This will configure your network adapters for best performance" -ForegroundColor Yellow
 
     try {
-        # Get active network adapters
         $adapters = Get-NetAdapter | Where-Object { $_.Status -eq "Up" }
 
         if (-not $adapters) {
@@ -720,12 +667,10 @@ function Optimize-NicSettings {
         foreach ($adapter in $adapters) {
             Write-Host "`nConfiguring $($adapter.Name) ($($adapter.InterfaceDescription))..." -ForegroundColor Magenta
 
-            # Disable power saving features
             Set-AdvancedProperty -Adapter $adapter -Property "Energy Efficient Ethernet" -Value "Disabled"
             Set-AdvancedProperty -Adapter $adapter -Property "Green Ethernet" -Value "Disabled"
             Set-AdvancedProperty -Adapter $adapter -Property "Power Saving Mode" -Value "Disabled"
 
-            # Disable offloads
             Set-AdvancedProperty -Adapter $adapter -Property "IPv4 Checksum Offload" -Value "Disabled"
             Set-AdvancedProperty -Adapter $adapter -Property "TCP Checksum Offload (IPv4)" -Value "Disabled"
             Set-AdvancedProperty -Adapter $adapter -Property "UDP Checksum Offload (IPv4)" -Value "Disabled"
@@ -734,18 +679,14 @@ function Optimize-NicSettings {
             Set-AdvancedProperty -Adapter $adapter -Property "Large Send Offload V2 (IPv4)" -Value "Disabled"
             Set-AdvancedProperty -Adapter $adapter -Property "Large Send Offload V2 (IPv6)" -Value "Disabled"
 
-            # Configure buffer sizes with valid range check
             Set-AdvancedProperty -Adapter $adapter -Property "Transmit Buffers" -Value 512 -Min 32 -Max 512 -Step 8
             Set-AdvancedProperty -Adapter $adapter -Property "Receive Buffers" -Value 512 -Min 32 -Max 512 -Step 8
 
-            # Enable RSS if available
             Set-AdvancedProperty -Adapter $adapter -Property "Receive Side Scaling" -Value "Enabled"
             Set-AdvancedProperty -Adapter $adapter -Property "Number of RSS Queues" -Value 4 -Min 1 -Max 16
 
-            # Flow control
             Set-AdvancedProperty -Adapter $adapter -Property "Flow Control" -Value "Disabled"
 
-            # Interrupt moderation
             Set-AdvancedProperty -Adapter $adapter -Property "Interrupt Moderation" -Value "Disabled"
             Set-AdvancedProperty -Adapter $adapter -Property "Interrupt Moderation Rate" -Value "Off"
         }
@@ -769,10 +710,8 @@ function Set-AdvancedProperty {
     )
     
     try {
-        # Get current properties
         $properties = Get-NetAdapterAdvancedProperty -Name $Adapter.Name
         
-        # Find matching property
         $prop = $properties | Where-Object { $_.DisplayName -eq $Property }
         
         if (-not $prop) {
@@ -780,7 +719,6 @@ function Set-AdvancedProperty {
             return
         }
         
-        # Validate value
         $valid = $true
         if ($prop.ValidDisplayValues) {
             $valid = $prop.ValidDisplayValues -contains $Value
@@ -793,7 +731,6 @@ function Set-AdvancedProperty {
             return
         }
         
-        # Set the property
         if ($prop.ValidDisplayValues) {
             Set-NetAdapterAdvancedProperty -Name $Adapter.Name -DisplayName $Property -DisplayValue $Value
         } else {
@@ -805,7 +742,6 @@ function Set-AdvancedProperty {
     }
 }
 
-# =================== [MAIN MENU FUNCTIONS] ===================
 function Main-Menu {
     param($choice)
     
@@ -859,7 +795,6 @@ function Main-Menu {
             }
             Show-Progress -Activity "Testing DNS Servers" -Status "Completed" -Percent 100 -Completed
 
-            # Display results with color coding
             $results = $results | Sort-Object AvgPing
             Write-Host "`nTest Results (sorted by latency):" -ForegroundColor Cyan
             Write-Host ("-" * 65) -ForegroundColor DarkGray
@@ -998,7 +933,6 @@ function Main-Menu {
     }
 }
 
-# =================== [MAIN EXECUTION] ===================
 Show-Introduction
 while ($true) {
     $choice = Show-Banner
