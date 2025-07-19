@@ -1,4 +1,4 @@
-$scriptVersion = "1.1.0"
+$scriptVersion = "1.1.1"
 $githubRawUrl = "https://raw.githubusercontent.com/Aluc4d/Nyx09/main/DNS-SHES.ps1"
 $scriptName = "DNS SHES"
 $updateChecked = $false
