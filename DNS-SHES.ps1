@@ -1,4 +1,4 @@
-$scriptVersion = "1.1.1"
+$scriptVersion = "1.1.2"
 $githubRawUrl = "https://raw.githubusercontent.com/Aluc4d/Nyx09/main/DNS-SHES.ps1"
 $scriptName = "DNS SHES"
 $updateChecked = $false
@@ -331,7 +331,7 @@ function Show-NetworkEnhancementMenu {
     Write-Host "`n  MAIN OPTIONS:" -ForegroundColor Yellow
     Write-Host "  [T] Tutorial" -ForegroundColor Yellow
     Write-Host "  [B] Bufferbloat Test" -ForegroundColor Green
-    Write-Host "  [A] Apply all optimizations (1-14)" -ForegroundColor Cyan
+    Write-Host "  [A] Apply all optimizations (1-12)" -ForegroundColor Cyan
     Write-Host "  [R] Revert all changes" -ForegroundColor Red
     Write-Host "  [M] Back to Main Menu" -ForegroundColor Gray
     
@@ -938,4 +938,5 @@ while ($true) {
     $choice = Show-Banner
     Main-Menu -choice $choice
 }
+
 
