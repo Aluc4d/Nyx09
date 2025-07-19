@@ -1,12 +1,13 @@
-$scriptVersion = "1.1.1"
+$scriptVersion = "1.1.0"
 $githubRawUrl = "https://raw.githubusercontent.com/Aluc4d/Nyx09/main/DNS-SHES.ps1"
 $scriptName = "DNS SHES"
-$updateChecked = $false
+$thisScriptPath = $MyInvocation.MyCommand.Path
 
 function Invoke-AutoUpdate {
     param(
         [string]$currentVersion,
-        [string]$updateUrl
+        [string]$updateUrl,
+        [string]$scriptPath
     )
     
     Show-Header "CHECKING FOR UPDATES"
@@ -46,7 +47,9 @@ function Invoke-AutoUpdate {
                 if ($choice -eq 'y' -or $choice -eq 'Y') {
                     Write-Host "`nUpdating script..." -ForegroundColor Cyan
                     
-                    $scriptPath = $MyInvocation.MyCommand.Path
+                    if (-not $scriptPath) {
+                        throw "Script path is missing - cannot perform update"
+                    }
                     
                     $backupPath = "$scriptPath.bak"
                     if (Test-Path $backupPath) { Remove-Item $backupPath -Force }
@@ -75,8 +78,6 @@ function Invoke-AutoUpdate {
         Write-Host "Continuing with current version..." -ForegroundColor Yellow
         Start-Sleep -Seconds 2
     }
-    
-    $global:updateChecked = $true
 }
 
 # =================== [CHANGELOG] ===================
@@ -127,7 +128,7 @@ function Show-Introduction {
 If (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()
 ).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Host "`nThis script needs to run as Administrator. Requesting elevated permissions..." -ForegroundColor Yellow
-    Start-Process powershell -Verb RunAs -ArgumentList ('-ExecutionPolicy Bypass -File "' + $MyInvocation.MyCommand.Definition + '"')
+    Start-Process powershell -Verb RunAs -ArgumentList ('-ExecutionPolicy Bypass -File "' + $thisScriptPath + '"')
     Exit
 }
 
@@ -332,24 +333,24 @@ function Show-NetworkEnhancementMenu {
     Write-Host "  [T] Tutorial" -ForegroundColor Yellow
     Write-Host "  [B] Bufferbloat Test" -ForegroundColor Green
     Write-Host "  [A] Apply all optimizations (1-12)" -ForegroundColor Cyan
-    Write-Host "  [R] Revert all changes" -ForegroundColor Red
-    Write-Host "  [M] Back to Main Menu" -ForegroundColor Gray
+    Write-Host "  [R] Revert all changes" -ForegroundColor DarkGray
+    Write-Host "  [M] Back to Main Menu" -ForegroundColor Red
     
     Write-Host "`n  OPTIMIZATION OPTIONS:" -ForegroundColor Yellow
-    Write-Host "  [1]  Set DNS/Local/Hosts/NetBT priorities"
-    Write-Host "  [2]  Set Network Throttling Index"
-    Write-Host "  [3]  Configure MaxUserPort/TcpTimedWaitDelay/DefaultTTL"
-    Write-Host "  [4]  Tweak TCP Settings and disable limiting"
-    Write-Host "  [5]  Tweak MTU Settings"
-    Write-Host "  [6]  Configure offload and network settings"
-    Write-Host "  [7]  Disable IPv6"
-    Write-Host "  [8]  Disable Internet Probing"
-    Write-Host "  [9]  Disable Internet addons"
-    Write-Host "  [10] Disable Nagle's Algorithm"
-    Write-Host "  [11] Enable Task Offload"
-    Write-Host "  [12] Optimize MLD/ICMP/DCA"
-    Write-Host "  [13] Set QoS Policy"
-    Write-Host "  [14] Optimize NIC Settings"
+    Write-Host "  [1]  Set DNS/Local/Hosts/NetBT priorities" -ForegroundColor Cyan
+    Write-Host "  [2]  Set Network Throttling Index" -ForegroundColor Cyan
+    Write-Host "  [3]  Configure MaxUserPort/TcpTimedWaitDelay/DefaultTTL" -ForegroundColor Cyan
+    Write-Host "  [4]  Tweak TCP Settings and disable limiting" -ForegroundColor Cyan
+    Write-Host "  [5]  Tweak MTU Settings" -ForegroundColor Cyan
+    Write-Host "  [6]  Configure offload and network settings" -ForegroundColor Cyan
+    Write-Host "  [7]  Disable IPv6" -ForegroundColor Cyan
+    Write-Host "  [8]  Disable Internet Probing" -ForegroundColor Cyan
+    Write-Host "  [9]  Disable Internet addons" -ForegroundColor Cyan
+    Write-Host "  [10] Disable Nagle's Algorithm" -ForegroundColor Cyan
+    Write-Host "  [11] Enable Task Offload" -ForegroundColor Cyan
+    Write-Host "  [12] Optimize MLD/ICMP/DCA" -ForegroundColor Cyan
+    Write-Host "  [13] Set QoS Policy (Manual)" -ForegroundColor Magenta
+    Write-Host "  [14] Optimize NIC Settings (Manual)" -ForegroundColor Magenta
     
     Write-Host "`n  " + ("=" * 50) -ForegroundColor DarkCyan
     Write-Host "  NOTE: NIC optimizations (option 14) are for Ethernet connections only!" -ForegroundColor Yellow
@@ -919,7 +920,7 @@ function Main-Menu {
             Toggle-Bufferbloat
         }
         "6" {
-            Invoke-AutoUpdate -currentVersion $scriptVersion -updateUrl $githubRawUrl
+            Invoke-AutoUpdate -currentVersion $scriptVersion -updateUrl $githubRawUrl -scriptPath $thisScriptPath
         }
         "0" {
             Write-Host "`nExiting DNS Checker..." -ForegroundColor Yellow
@@ -933,10 +934,10 @@ function Main-Menu {
     }
 }
 
+# Main script execution
 Show-Introduction
+Invoke-AutoUpdate -currentVersion $scriptVersion -updateUrl $githubRawUrl -scriptPath $thisScriptPath
 while ($true) {
     $choice = Show-Banner
     Main-Menu -choice $choice
 }
-
-
