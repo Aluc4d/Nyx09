@@ -34,15 +34,10 @@ DNS SHES helps you boost your internet performance and stability by:
 
 > 💡 Run PowerShell as Administrator for full functionality.
 
-> 💡 Enter this command:
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-
-> 💡 Type Y To Accept execution policy:
-
 > 💡 Copy DNS-SHES.ps1 To Desktop Via File explorer
 
 > 💡 Enter this command in Powershell To start the script:
-& "$env:USERPROFILE\Desktop\DNS-SHES.ps1"
+powershell -ExecutionPolicy Bypass -File "C:\Users\admin\Desktop\DNS-SHES.ps1"
 
 ## ⚠️ Disclaimer
 
