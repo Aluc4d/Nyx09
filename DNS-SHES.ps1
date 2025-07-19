@@ -1,36 +1,3 @@
-$scriptPath = $MyInvocation.MyCommand.Definition
-$scriptUrl = "https://raw.githubusercontent.com/shibuyatech/DNS-SHES/main/DNS-SHES.ps1"
-
-function Get-RemoteVersion {
-    param($content)
-    if ($content -match '\$scriptVersion\s*=\s*"([\d\.]+)"') {
-        return $matches[1]
-    } else {
-        return "0.0.0"
-    }
-}
-
-try {
-    $remoteScript = Invoke-WebRequest -Uri $scriptUrl -UseBasicParsing -ErrorAction Stop
-    $remoteContent = $remoteScript.Content
-    $remoteVersion = Get-RemoteVersion -content $remoteContent
-    $localVersion = $scriptVersion
-
-    if ($remoteVersion -ne $null -and $localVersion -ne $null) {
-        if ([version]$remoteVersion -gt [version]$localVersion) {
-            Write-Host "A new version ($remoteVersion) is available. Updating from $localVersion..."
-            $tempFile = "$env:TEMP\DNS-SHES-UPDATE.ps1"
-            $remoteContent | Set-Content -Path $tempFile -Encoding UTF8
-            Copy-Item -Path $tempFile -Destination $scriptPath -Force
-            Write-Host "Update complete. Restarting script..."
-            Start-Process powershell -ArgumentList "-ExecutionPolicy Bypass -File `"$scriptPath`""
-            exit
-        }
-    }
-} catch {
-    Write-Host "Failed to check for updates. Continuing with local version."
-}
-
 $scriptVersion = "1.1.0"
 $githubRawUrl = "https://raw.githubusercontent.com/Aluc4d/Nyx09/main/DNS-SHES.ps1"
 $scriptName = "DNS SHES"
