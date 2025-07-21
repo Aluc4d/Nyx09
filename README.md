@@ -28,13 +28,13 @@ DNS SHES helps you boost your internet performance and stability by:
 
 ## 📦 How to Use
 
-1. Download or clone `DNS-SHES.zip` repo. 💾💾💾
+1. 💾 Download or Clone `DNS-SHES.zip` repo. 
 
-2. ⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬
+2. 🔗 Extract `DNS-SHES.zip` and open the extracted `DNS-SHES` Folder
 
-> 💡 Run Run-DNS-SHES.bat as Administrator for full functionality.
+>  💡 Run Run-DNS-SHES.bat as Administrator for full functionality.
 
-3. Follow the interactive menu to choose your desired optimization.
+3. 🔗 Follow the interactive menu to choose your desired optimization.
 
 ## ⚠️ Disclaimer
 
@@ -42,7 +42,7 @@ This script is safe and doesn't modify critical system files. Always review scri
 
 ## 📁 DNS SHES
 
-**DNS SHES** – *because your DNS should be optimized like a boss 😎*
+**DNS SHES** – *Because your internet & DNS should be optimized to maximum like a boss 😎*
 
 ---
 
