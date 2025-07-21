@@ -28,15 +28,11 @@ DNS SHES helps you boost your internet performance and stability by:
 
 ## 📦 How to Use
 
-1. Download or clone `DNS-SHES.ps1` repo.
+1. Download or clone `DNS-SHES.zip` repo. 💾💾💾
 
-2. 
-> 💡 Copy DNS-SHES.ps1 To Desktop Via File explorer
+2. ⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬⏬
 
-> 💡 Run PowerShell as Administrator for full functionality.
-
-> 💡 Enter this command in Powershell To start the script:
-powershell -ExecutionPolicy Bypass -File "C:\Users\admin\Desktop\DNS-SHES.ps1"
+> 💡 Run Run-DNS-SHES.bat as Administrator for full functionality.
 
 3. Follow the interactive menu to choose your desired optimization.
 
