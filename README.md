@@ -32,9 +32,9 @@ DNS SHES helps you boost your internet performance and stability by:
 
 2. 🔗 Extract `DNS-SHES.zip` and open the extracted `DNS-SHES` Folder
 
->  💡 Run Run-DNS-SHES.bat as Administrator for full functionality.
+3. 💡 Run Run-DNS-SHES.bat as Administrator for full functionality.
 
-3. 🔗 Follow the interactive menu to choose your desired optimization.
+4. 🔗 Follow the interactive menu to choose your desired optimization.
 
 ## ⚠️ Disclaimer
 
